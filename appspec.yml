@@ -2,8 +2,12 @@ version: 0.0
 os: linux
 files:
   - source: /tmp/codigo
-    destination: /opt/tomcat
+    destination: /opt/tomcat/webapps
 hooks:
+  BeforeInstall:
+    - location: codeploy-scripts/beforeinstall.sh
+      timeout: 300
+      runas:  root
   ApplicationStop:
     - location: codedeploy-scripts/stop.sh
       timeout: 300
