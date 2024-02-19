@@ -50,4 +50,4 @@ jobs:
 
 
     - name: Run Gradle Tests
-      run: ./gradlew test 
+      run: ./gradlew test
