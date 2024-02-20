@@ -1,26 +1,33 @@
-# Este flujo de trabajo despliega la aplicación con CodeDeploy después de que el flujo de trabajo de compilación y prueba (Java CI with Gradle) haya sido completado con éxito.
+name: Deploy
 
-name: Java CD with CodeDeploy
-
-# Desencadenadores: Este flujo de trabajo se activa cuando el flujo de trabajo Java CI with Gradle ha sido completado.
 on:
   workflow_run:
-    workflows: [Java CI with Gradle]  # Se activa cuando el flujo de trabajo Java CI with Gradle está en la lista de flujos de trabajo completados
-    types: 
-      - completed
-
-# Trabajos:
+    workflows: ["Java CI with Gradle"]
+    types:
+        - completed
 jobs:
-  # Trabajo "on-success":
-  on-success:
-    runs-on: ubuntu-20.04
-    if: ${{ github.event.workflow_run.conclusion == 'success' }}  # Se ejecuta solo si el flujo de trabajo anterior fue exitoso
-    steps:
-      - run: echo 'The triggering workflow passed'  # Imprime un mensaje si el flujo de trabajo anterior fue exitoso
+  build:
+      if: ${{ github.event.workflow_run.conclusion == 'success' }}
+      runs-on: ubuntu-20.04
+      permissions:
+        contents: read
 
-  # Trabajo "on-failure":
-  on-failure:
-    runs-on: ubuntu-20.04
-    if: ${{ github.event.workflow_run.conclusion == 'failure' }}  # Se ejecuta solo si el flujo de trabajo anterior falló
-    steps:
-      - run: echo 'The triggering workflow failed'  # Imprime un mensaje si el flujo de trabajo anterior falló
+      steps:
+      -  name: r repo
+         uses: actions/checkout@v4
+
+      -  name: Credenciales 
+         uses: aws-actions/configure-aws-credentials@v4.0.2
+         with:
+           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+           aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}
+           aws-region: us-east-1
+
+      -  name: Despligue CD
+         run: |
+           aws deploy create-deployment \
+           --application-name "jmbdweb" \
+           --deployment-group-name "gcd" \
+           --github-location repository=${{ github.repository }},commitId=${{ github.sha }}
+       
