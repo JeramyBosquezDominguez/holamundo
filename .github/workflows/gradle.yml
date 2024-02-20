@@ -21,7 +21,7 @@ jobs:
       contents: read            # Se requieren permisos de lectura en el repositorio
 
     steps:
-      - name: Clonar repositorio
+      - name: cc repo
         uses: actions/checkout@v4  # Acción para clonar el repositorio
         
       - name: Set up JDK 17
@@ -33,7 +33,7 @@ jobs:
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v3 # Configuración de Gradle
         
-      - name: Hacer a gradlew ejecutable
+      - name: Gradlew ejecutable
         run: chmod +x gradlew        # Concede permisos de ejecución al script Gradle Wrapper
         
       - name: Build with Gradle Wrapper
@@ -43,7 +43,7 @@ jobs:
   testing:
     runs-on: ubuntu-20.04
     steps:
-      - name: Clonar codigo
+      - name: cc codigo
         uses: actions/checkout@v4
         
       - name: Set up JDK 17
@@ -55,7 +55,7 @@ jobs:
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v3
         
-      - name: Hacer a gradlew ejecutable
+      - name: Gradlew ejecutable
         run: chmod +x gradlew
         
       - name: Run tests
